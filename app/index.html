@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confluence Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">C</div>
+          <div>
+            <div class="brand-line">
+              <h1>Confluence Studio</h1>
+              <span class="badge">HackSimBuild 2026</span>
+            </div>
+            <p>Integrated water-energy resource simulation for building designers</p>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Primary">
+          <button class="tab-button is-active" data-tab="dashboard" type="button">Dashboard</button>
+          <button class="tab-button" data-tab="flood" type="button">Flood</button>
+          <button class="tab-button" data-tab="parameters" type="button">Parameters</button>
+          <button class="tab-button" data-tab="pipeline" type="button">Pipeline</button>
+        </nav>
+      </header>
+
+      <section class="model-strip" aria-label="Anchor model">
+        <span><strong>Anchor</strong> DOE mid-rise multifamily</span>
+        <span><strong>Location</strong> Houston, TX, ASHRAE CZ-2A</span>
+        <span><strong>Tank</strong> <output data-field="rainCapacityLabel"></output> gal rainwater</span>
+        <span><strong>Greywater</strong> <output data-field="greyCapacityLabel"></output> gal buffer</span>
+        <span class="live-status"><i></i> Simulation ready</span>
+      </section>
+
+      <main class="workspace">
+        <section class="tab-panel is-active" data-panel="dashboard">
+          <div class="dashboard-grid">
+            <aside class="panel controls-panel">
+              <div class="panel-heading">
+                <h2>Scenario Controls</h2>
+                <p>Adjust the resource-loop design and compare annual outcomes.</p>
+              </div>
+
+              <div class="control-group">
+                <label>System View</label>
+                <div class="segmented" role="group" aria-label="System view">
+                  <button type="button" data-scenario="baseline">Baseline</button>
+                  <button class="is-active" type="button" data-scenario="augmented">Water Loops</button>
+                </div>
+              </div>
+
+              <div class="slider-field">
+                <div>
+                  <label for="rainCapacity">Rainwater Storage</label>
+                  <output data-field="rainCapacity"></output>
+                </div>
+                <input id="rainCapacity" data-state-key="rainCapacity" type="range" min="5000" max="100000" step="5000" />
+              </div>
+
+              <div class="slider-field">
+                <div>
+                  <label for="greywaterCapacity">Greywater Buffer</label>
+                  <output data-field="greywaterCapacity"></output>
+                </div>
+                <input id="greywaterCapacity" data-state-key="greywaterCapacity" type="range" min="2000" max="30000" step="1000" />
+              </div>
+
+              <div class="slider-field">
+                <div>
+                  <label for="greywaterEfficiency">Greywater Recovery</label>
+                  <output data-field="greywaterEfficiency"></output>
+                </div>
+                <input id="greywaterEfficiency" data-state-key="greywaterEfficiency" type="range" min="0.5" max="0.95" step="0.05" />
+              </div>
+
+              <div class="stat-band">
+                <div>
+                  <span>Water Offset</span>
+                  <strong data-field="waterSaved"></strong>
+                  <small>gal/year</small>
+                </div>
+                <div>
+                  <span>Carbon Avoided</span>
+                  <strong data-field="co2Saved"></strong>
+                  <small>kg CO2e/year</small>
+                </div>
+              </div>
+
+              <p class="equivalence" data-field="equivalence"></p>
+            </aside>
+
+            <section class="panel flow-panel">
+              <div class="panel-heading row-heading">
+                <div>
+                  <h2>Hourly Resource Flow</h2>
+                  <p>Average flows for the selected hour of day.</p>
+                </div>
+                <span class="pill">Hour <output data-field="scrubHour"></output>:00</span>
+              </div>
+
+              <div class="flow-diagram" aria-label="Water flow diagram">
+                <svg id="flowSvg" viewBox="0 0 720 420" role="img" aria-labelledby="flowTitle">
+                  <title id="flowTitle">Sources, uses, and sinks for water flows</title>
+                  <defs>
+                    <linearGradient id="mainsGrad" x1="0" x2="1">
+                      <stop offset="0" stop-color="#94a3b8" stop-opacity="0.2" />
+                      <stop offset="1" stop-color="#94a3b8" stop-opacity="0.72" />
+                    </linearGradient>
+                    <linearGradient id="rainGrad" x1="0" x2="1">
+                      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.18" />
+                      <stop offset="1" stop-color="#38bdf8" stop-opacity="0.82" />
+                    </linearGradient>
+                    <linearGradient id="greyGrad" x1="0" x2="1">
+                      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.18" />
+                      <stop offset="1" stop-color="#a78bfa" stop-opacity="0.82" />
+                    </linearGradient>
+                  </defs>
+                  <g id="flowLinks"></g>
+                  <g id="flowNodes"></g>
+                </svg>
+              </div>
+
+              <div class="slider-field compact">
+                <div>
+                  <label for="scrubHour">Hour Profile</label>
+                  <output data-field="scrubHourLabel"></output>
+                </div>
+                <input id="scrubHour" type="range" min="0" max="23" step="1" />
+              </div>
+            </section>
+
+            <section class="score-stack">
+              <div class="metric-card">
+                <span>Annual Mains Water Saved</span>
+                <strong data-field="mainsWaterSaved"></strong>
+                <small>baseline to water-loop scenario</small>
+              </div>
+              <div class="metric-card">
+                <span>Annual Bill Reduction</span>
+                <strong data-field="annualSavings"></strong>
+                <small>water, sewer, gas, electricity</small>
+              </div>
+              <div class="metric-card">
+                <span>WENI Improvement</span>
+                <strong data-field="weniDelta"></strong>
+                <small data-field="weniBase"></small>
+              </div>
+              <div class="metric-card">
+                <span>Capital Payback</span>
+                <strong data-field="payback"></strong>
+                <small data-field="capex"></small>
+              </div>
+
+              <div class="panel validation-panel">
+                <div class="panel-heading">
+                  <h2>Model Check</h2>
+                </div>
+                <dl class="model-list">
+                  <div><dt>Baseline CO2</dt><dd data-field="baselineCo2"></dd></div>
+                  <div><dt>Scenario CO2</dt><dd data-field="scenarioCo2"></dd></div>
+                  <div><dt>Pump Energy Added</dt><dd data-field="pumpEnergy"></dd></div>
+                  <div><dt>Rainwater Used</dt><dd data-field="rainUsed"></dd></div>
+                  <div><dt>Greywater Used</dt><dd data-field="greyUsed"></dd></div>
+                </dl>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="flood">
+          <div class="two-column">
+            <aside class="panel controls-panel">
+              <div class="panel-heading">
+                <h2>Storm Stress Test</h2>
+                <p>Estimate site-runoff capture and avoided annual flood damage.</p>
+              </div>
+
+              <div class="control-group">
+                <label>Rainfall Event</label>
+                <div class="segmented" role="group" aria-label="Storm event">
+                  <button class="is-active" type="button" data-storm="tmy_max">TMY Max</button>
+                  <button type="button" data-storm="harvey">Harvey Stress</button>
+                </div>
+              </div>
+
+              <div class="slider-field">
+                <div>
+                  <label for="roofArea">Roof Capture Area</label>
+                  <output data-field="roofArea"></output>
+                </div>
+                <input id="roofArea" data-state-key="roofArea" type="range" min="5000" max="30000" step="1000" />
+              </div>
+
+              <div class="slider-field">
+                <div>
+                  <label for="femaAal">FEMA Baseline AAL</label>
+                  <output data-field="femaAal"></output>
+                </div>
+                <input id="femaAal" data-state-key="femaAal" type="range" min="10000" max="150000" step="5000" />
+              </div>
+
+              <div class="stat-band flood-stats">
+                <div>
+                  <span>Peak Runoff Reduction</span>
+                  <strong data-field="peakReduction"></strong>
+                  <small>site peak flow</small>
+                </div>
+                <div>
+                  <span>Avoided Damage</span>
+                  <strong data-field="avoidedDamage"></strong>
+                  <small>annualized</small>
+                </div>
+              </div>
+            </aside>
+
+            <section class="panel hydro-panel">
+              <div class="panel-heading row-heading">
+                <div>
+                  <h2>Hydrograph And Tank Dynamics</h2>
+                  <p>Captured runoff, bypass overflow, and tank fill over 72 hours.</p>
+                </div>
+                <span class="pill" data-field="stormLabel"></span>
+              </div>
+              <div class="chart-wrap">
+                <svg id="hydroSvg" viewBox="0 0 960 420" role="img" aria-label="Storm hydrograph chart"></svg>
+              </div>
+              <dl class="summary-row">
+                <div><dt>Total Site Runoff</dt><dd data-field="totalRunoff"></dd></div>
+                <div><dt>Overflow To Drainage</dt><dd data-field="overflowRunoff"></dd></div>
+                <div><dt>Hazus Damage Delta</dt><dd data-field="damageReduction"></dd></div>
+              </dl>
+            </section>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="parameters">
+          <div class="two-column">
+            <section class="panel form-panel">
+              <div class="panel-heading">
+                <h2>Physical Factors</h2>
+                <p>Conversion factors used by the water-energy nexus model.</p>
+              </div>
+              <div class="form-grid" data-form="factors"></div>
+            </section>
+
+            <section class="panel form-panel">
+              <div class="panel-heading">
+                <h2>Utility Rates</h2>
+                <p>Houston water, sewer, gas, and time-of-use electricity assumptions.</p>
+              </div>
+              <div class="form-grid" data-form="rates"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="pipeline">
+          <div class="two-column">
+            <section class="panel upload-panel">
+              <div class="panel-heading">
+                <h2>Simulation File Pipeline</h2>
+                <p>Register IDF and EPW files for the post-MVP EnergyPlus workflow.</p>
+              </div>
+
+              <label class="drop-zone">
+                <input type="file" accept=".idf" data-file-type="idf" />
+                <span>IDF Model</span>
+                <strong data-field="idfName">Use bundled Houston prototype</strong>
+                <small>Accepts EnergyPlus `.idf` files</small>
+              </label>
+
+              <label class="drop-zone">
+                <input type="file" accept=".epw" data-file-type="epw" />
+                <span>Weather File</span>
+                <strong data-field="epwName">Use synthetic Houston TMY surrogate</strong>
+                <small>Accepts EnergyPlus `.epw` files</small>
+              </label>
+
+              <button class="secondary-action" id="resetFiles" type="button">Clear File Overrides</button>
+            </section>
+
+            <section class="panel terminal-panel">
+              <div class="panel-heading">
+                <h2>Processing Log</h2>
+                <p>File validation and pipeline status messages.</p>
+              </div>
+              <div class="terminal" aria-live="polite" data-field="uploadLog"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Confluence Studio, static MVP</span>
+        <span>Version 3.0 Houston</span>
+      </footer>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+name: Static Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  static-check:
+    name: Lint static assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Verify required files are present
+        run: |
+          set -e
+          for f in \
+            README.md \
+            LICENSE \
+            CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md \
+            app/index.html \
+            app/styles.css \
+            app/app.js \
+            docs/FUNCTIONAL_SPEC.md \
+            docs/OPEN_SOURCE_READINESS.md \
+            docs/GITHUB_PUBLISHING_HANDOFF.md \
+            examples/scenarios.json
+          do
+            if [ ! -f "$f" ]; then
+              echo "Missing required file: $f" >&2
+              exit 1
+            fi
+          done
+          echo "All required files present."
+
+      - name: Validate JavaScript syntax
+        run: node --check app/app.js
+
+      - name: Validate example scenarios JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('examples/scenarios.json','utf8')); console.log('scenarios.json: valid JSON');"
+
+      - name: Validate index.html is parseable
+        run: |
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('app/index.html','utf8');
+            if (!/<html[\s>]/i.test(html) || !/<\/html>/i.test(html)) {
+              console.error('app/index.html does not look like a complete HTML document');
+              process.exit(1);
+            }
+            console.log('app/index.html: basic structure OK');
+          "

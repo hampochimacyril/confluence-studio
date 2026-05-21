@@ -1,0 +1,48 @@
+{
+  "description": "Example Confluence Studio scenario presets for early-design comparison.",
+  "schema_version": "0.1.0",
+  "scenarios": [
+    {
+      "id": "houston_default",
+      "name": "Houston Default Water Loop",
+      "location": "Houston, TX",
+      "building_type": "DOE Mid-rise Multifamily",
+      "climate_zone": "ASHRAE 2A",
+      "rain_capacity_gal": 25000,
+      "greywater_capacity_gal": 12000,
+      "greywater_efficiency": 0.7,
+      "rain_efficiency": 0.8,
+      "pump_energy_kwh_per_gal": 0.0015,
+      "roof_area_ft2": 15000,
+      "floor_area_ft2": 65000
+    },
+    {
+      "id": "houston_low_capex",
+      "name": "Houston Low-Capex Rainwater Only",
+      "location": "Houston, TX",
+      "building_type": "DOE Mid-rise Multifamily",
+      "climate_zone": "ASHRAE 2A",
+      "rain_capacity_gal": 10000,
+      "greywater_capacity_gal": 2000,
+      "greywater_efficiency": 0.5,
+      "rain_efficiency": 0.75,
+      "pump_energy_kwh_per_gal": 0.0012,
+      "roof_area_ft2": 15000,
+      "floor_area_ft2": 65000
+    },
+    {
+      "id": "houston_resilience_first",
+      "name": "Houston Resilience-First Detention",
+      "location": "Houston, TX",
+      "building_type": "DOE Mid-rise Multifamily",
+      "climate_zone": "ASHRAE 2A",
+      "rain_capacity_gal": 75000,
+      "greywater_capacity_gal": 18000,
+      "greywater_efficiency": 0.75,
+      "rain_efficiency": 0.85,
+      "pump_energy_kwh_per_gal": 0.0018,
+      "roof_area_ft2": 20000,
+      "floor_area_ft2": 65000
+    }
+  ]
+}
