@@ -37,7 +37,7 @@ jobs:
             examples/scenarios.json
           do
             if [ ! -f "$f" ]; then
-              echo "Missing required file: $f" >&2
+              echo "Missing required file $f" >&2
               exit 1
             fi
           done
@@ -47,7 +47,8 @@ jobs:
         run: node --check app/app.js
 
       - name: Validate example scenarios JSON
-        run: node -e "JSON.parse(require('fs').readFileSync('examples/scenarios.json','utf8')); console.log('scenarios.json: valid JSON');"
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('examples/scenarios.json','utf8')); console.log('scenarios.json valid');"
 
       - name: Validate index.html is parseable
         run: |
@@ -58,5 +59,5 @@ jobs:
               console.error('app/index.html does not look like a complete HTML document');
               process.exit(1);
             }
-            console.log('app/index.html: basic structure OK');
+            console.log('app/index.html basic structure OK');
           "
